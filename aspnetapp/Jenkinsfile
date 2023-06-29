@@ -5,7 +5,7 @@ pipeline {
 
         stage ('checkout') {
             steps {
-            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/vaishnavi-g06/aspnet-mssql/tree/main/aspnetapp']]])
+            checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/vaishnavi-g06/aspnet-mssql']]])
             }
         }
        
