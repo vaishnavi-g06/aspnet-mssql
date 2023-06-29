@@ -37,15 +37,21 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to AKS') {
-            steps {
-                withKubeConfig([credentialsId: 'aks_cred', kubeconfig: 'KUBECONFIG_PATH']) {
-                    // Deploy the image to AKS
-                    script {
-                        sh "kubectl apply -f ${env.JENKINSFILE_PATH}"
-                    }
-                }
+       stage('Deploy to AKS') {
+    steps {
+        withCredentials([file(credentialsId: 'aks_cred', variable: 'KUBECONFIG_PATH')]) {
+            // Deploy the image to AKS using Kubernetes YAML file
+            script {
+                sh "kubectl apply -f path/to/kubernetes.yaml --kubeconfig=${env.KUBECONFIG_PATH}"
             }
         }
+    }
+}
+
+
+
+
+
+
     }
 }
