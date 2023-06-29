@@ -24,7 +24,8 @@ pipeline {
     }               
     stage('Push Image to Docker Hub') {         
       steps{                            
-	sh 'sudo docker push vaishnavi0601/aspet-repo:$BUILD_NUMBER'                 echo 'Push Image Completed'       
+	sh 'sudo docker push vaishnavi0601/aspet-repo:$BUILD_NUMBER'              
+	echo 'Push Image Completed'       
       }           
     }      
   } 
