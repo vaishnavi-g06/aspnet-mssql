@@ -1,19 +1,11 @@
 pipeline {
-     agent {
-         label 'myslave'
-     }
-        environment {
-        //once you sign up for Docker hub, use that user_id here
-        registry = "your_docker_hub_user_id/mypython-app"
-        //- update your credentials ID after creating credentials for connecting to Docker Hub
-        registryCredential = 'dockerhub'
-        dockerImage = ''
-    }
+   agent any
+   
     stages {
 
         stage ('checkout') {
             steps {
-            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/vaishnavi-g06/aspnet-mssql']]])
+            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/vaishnavi-g06/aspnet-mssql/tree/main/aspnetapp']]])
             }
         }
        
@@ -29,8 +21,9 @@ pipeline {
     stage('Upload Image') {
      steps{   
          script {
-            docker.withRegistry( '', registryCredential ) {
-            dockerImage.push()
+            withDockerRegistry([ credentialsId: "dockerhub", url: "" ]) {
+        dockerImage.push()
+        }
             }
         }
       }
