@@ -39,7 +39,7 @@ pipeline {
         }
         stage('Deploy to AKS') {
             steps {
-                withKubeConfig([credentialsId: 'aks_cred', kubeconfigVariable: 'KUBECONFIG_PATH']) {
+                withKubeConfig([credentialsId: 'aks_cred', kubeconfig: 'KUBECONFIG_PATH']) {
                     // Deploy the image to AKS
                     script {
                         sh "kubectl apply -f ${env.JENKINSFILE_PATH}"
