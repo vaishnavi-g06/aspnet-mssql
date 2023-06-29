@@ -1,40 +1,51 @@
 pipeline {
-     agent any
-     
-        environment {
-        //once you create ACR in Azure cloud, use that here
-        registryName = "aspnetimg/my-aspnet"
-        //- update your credentials ID after creating credentials for connecting to ACR
-        registryCredential = 'ACR'
-        dockerImage = ''
-        registryUrl = 'aspnetimg.azurecr.io'
+    agent any
+    environment {
+        REGISTRY_URL = 'aspnetimg.azurecr.io'
+        REGISTRY_CREDENTIALS_ID = 'ACR'
+        AKS_RESOURCE_GROUP = 'jenkins-rg'
+        AKS_CLUSTER_NAME = 'aspnet-cluster'
+        KUBECONFIG_PATH = '/var/lib/jenkins/.kube/config'
+        
+        DOCKERFILE_PATH = 'aspnetapp/Dockerfile'
+        JENKINSFILE_PATH = 'aspnetapp/Jenkinsfile'
     }
-    
     stages {
-
-        stage ('checkout') {
+         stage ('checkout') {
             steps {
             checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/vaishnavi-g06/aspnet-mssql']]])
             }
         }
-         stage ('Build Docker image') {
+        stage('Build') {
             steps {
-                
+                // Build your Docker image using the fetched Dockerfile
                 script {
-                    dockerImage = docker.build registryName
+                    docker.build("my-image:${env.BUILD_NUMBER}", "-f ${env.DOCKERFILE_PATH} .")
                 }
             }
         }
-       
-    // Uploading Docker images into ACR
-    stage('Upload Image to ACR') {
-     steps{   
-         script {
-            docker.withRegistry( "http://${registryUrl}", registryCredential ) {
-            dockerImage.push()
+        stage('Push to ACR') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: env.REGISTRY_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    // Log in to ACR
+                    script {
+                        docker.withRegistry("${env.REGISTRY_URL}", "${env.USERNAME}", "${env.PASSWORD}") {
+                            // Push the image to ACR
+                            docker.image("my-image:${env.BUILD_NUMBER}").push()
+                        }
+                    }
+                }
             }
         }
-      }
-    }
+        stage('Deploy to AKS') {
+            steps {
+                withKubeConfig([credentialsId: 'aks_cred', kubeconfigVariable: 'KUBECONFIG_PATH']) {
+                    // Deploy the image to AKS
+                    script {
+                        sh "kubectl apply -f ${env.JENKINSFILE_PATH}"
+                    }
+                }
+            }
+        }
     }
 }
