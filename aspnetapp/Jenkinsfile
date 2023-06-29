@@ -7,8 +7,8 @@ pipeline {
         AKS_CLUSTER_NAME = 'aspnet-cluster'
         KUBECONFIG_PATH = '/var/lib/jenkins/.kube/config'
         
-        DOCKERFILE_PATH = 'aspnetapp/Dockerfile'
-        JENKINSFILE_PATH = 'aspnetapp/Jenkinsfile'
+        DOCKERFILE_PATH = '/aspnetapp/Dockerfile'
+        JENKINSFILE_PATH = '/aspnetapp/Jenkinsfile'
     }
     stages {
          stage ('checkout') {
