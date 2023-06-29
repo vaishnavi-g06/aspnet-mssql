@@ -1,0 +1,32 @@
+pipeline {   
+  agent any
+  environment {     
+    DOCKERHUB_CREDENTIALS= credentials('dockerhub')     
+  }    
+  stages {         
+    stage("Git Checkout"){           
+      steps{                
+	git credentialsId: 'github', url: 'https://github.com/vaishnavi-g06/aspnet-mssql/aspnetapp'                 
+	echo 'Git Checkout Completed'            
+      }        
+    }
+    stage('Build Docker Image') {         
+      steps{                
+	sh 'sudo docker build -t vaishnavi0601/aspet-repo:$BUILD_NUMBER .'           
+        echo 'Build Image Completed'                
+      }           
+    }
+    stage('Login to Docker Hub') {         
+      steps{                            
+	sh 'echo $DOCKERHUB_CREDENTIALS_PSW | sudo docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'                 
+	echo 'Login Completed'                
+      }           
+    }               
+    stage('Push Image to Docker Hub') {         
+      steps{                            
+	sh 'sudo docker push vaishnavi0601/aspet-repo:$BUILD_NUMBER'                 echo 'Push Image Completed'       
+      }           
+    }      
+  } 
+  
+} 
