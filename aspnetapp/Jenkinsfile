@@ -6,7 +6,7 @@ pipeline {
   stages {         
     stage("Git Checkout"){           
       steps{                
-	git credentialsId: 'github', url: 'https://github.com/vaishnavi-g06/aspnet-mssql/aspnetapp'                 
+	git credentialsId: 'github', url: 'https://github.com/vaishnavi-g06/aspnet-mssql'                 
 	echo 'Git Checkout Completed'            
       }        
     }
