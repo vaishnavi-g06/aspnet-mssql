@@ -11,19 +11,19 @@ pipeline {
        
         stage ('Build docker image') {
             steps {
-                script {
+               
                 dockerImage = docker.build registry
-                }
+                
             }
         }
        
          // Uploading Docker images into Docker Hub
     stage('Upload Image') {
      steps{   
-         script {
+        
             withDockerRegistry([ credentialsId: "dockerhub", url: "" ]) {
         dockerImage.push()
-        }
+        
             }
         }
       }
@@ -31,14 +31,14 @@ pipeline {
    
     stage ('K8S Deploy') {
         steps {
-            script {
+           
                 kubernetesDeploy(
                     configs: 'k8s-deployment.yaml',
                     kubeconfigId: 'K8S',
                     enableConfigSubstitution: true
                     )           
                
-            }
+            
         }
     }
   
